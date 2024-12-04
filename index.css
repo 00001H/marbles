@@ -1,0 +1,65 @@
+html{
+    background-color: darkcyan;
+}
+.highlight{
+    width: 105px;
+    height: 57px;
+}
+.slot:not(:last-child):hover>.highlight{
+    border-bottom: 4px solid lightgreen;
+}
+.slot{
+    width: 50px;
+    height: 50px;
+    box-sizing: border-box;
+    border-radius: 25px;
+}
+.slot[state="empty"]{
+    border: 3px dotted black;
+}
+.slot[state="white"]{
+    background-image: radial-gradient(white,#a6a6a6);
+}
+.slot[state="black"]{
+    background-color: black;
+}
+#row{
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+button{
+    margin-top: 20px;
+    margin-bottom: 5px;
+    border: none;
+    background-color: orange;
+    width: 40px;
+    height: 40px;
+}
+button:hover{
+    background-color: #ffb325;
+}
+button:active{
+    background-color: #bb8013;
+}
+.lhs{
+    color: chartreuse;
+}
+.rhs{
+    color: lightpink;
+}
+#pending{
+    font-size: xx-large;
+}
+p{
+    font-size: x-large;
+    font-weight: bold;
+    margin: 0;
+}
+.cue{
+    color: white;
+    font-size: small;
+}
+#history>.inactive{
+    opacity: 50%;
+}
