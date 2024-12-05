@@ -3,7 +3,7 @@ html{
 }
 .highlight{
     width: 105px;
-    height: 57px;
+    height: 105%;
 }
 .slot:not(:last-child):hover>.highlight{
     border-bottom: 4px solid lightgreen;
@@ -59,6 +59,7 @@ p{
 .cue{
     color: white;
     font-size: small;
+    position: absolute;
 }
 #history>.inactive{
     opacity: 50%;
