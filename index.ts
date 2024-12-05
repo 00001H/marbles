@@ -83,9 +83,12 @@ class Board{
             }while(--this.mlist.length>this.mptr);
         }
         this.mlist.push({src: src,dst: dst});
-        ++this.mptr;
+        let mptr = ++this.mptr;
         if(this.visual){
             let entry = document.createElement("p");
+            entry.addEventListener("click",()=>{
+                this.do_to(mptr);
+            });
             let lhs = document.createElement("span");
             lhs.classList.add("lhs");
             lhs.textContent = sequ(src);
@@ -111,6 +114,16 @@ class Board{
             hsent[this.mptr].classList.remove("inactive");
             let mv = this.mlist[this.mptr++];
             this.move(mv.src,mv.dst,false);
+        }
+    }
+    do_to(i: number){
+        i = Math.max(0,Math.min(i,this.mlist.length));
+        if(this.mptr<i){
+            do{
+                this.redo();
+            }while(this.mptr<i);
+        }else while(this.mptr>i){
+            this.undo();
         }
     }
     move(src: number,dst: number,record: boolean=true){
@@ -160,19 +173,16 @@ function new_slot(cue: string|null=null) : HTMLDivElement{
     sl.append(hl);
     return sl;
 }
-function mv(src: number,dst: number,after: ()=>void,animate: number){
-    experiment.move(src,dst);
-    setTimeout(after,animate);
+function sleep(ms: number){
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
-function mvlist(mvs: Move[],animate: number){
+async function mvlist(mvs: Move[],animate: number){
     let rev = mvs.toReversed();
-    function once(){
-        if(rev.length){
-            let m = rev.pop();
-            mv(m.src,m.dst,once,animate);
-        }
+    while(rev.length){
+        await sleep(animate);
+        let m = rev.pop();
+        experiment.move(m.src,m.dst);
     }
-    once();
 }
 function alsolve(){
     let marbles = experiment.length-4;
@@ -208,7 +218,7 @@ addEventListener("load",() => {
     document.getElementById("redo").addEventListener("click",()=>{
         experiment.redo();
     });
-    addEventListener("keyup",(e)=>{
+    addEventListener("keyup",async (e)=>{
         if(e.altKey||e.shiftKey||e.metaKey){
             return;
         }
@@ -221,7 +231,7 @@ addEventListener("load",() => {
             experiment.restart();
         }else if(k==="s"){
             experiment.restart();
-            mvlist(alsolve(),100);
+            await mvlist(alsolve(),100);
         }else if(k==="Backspace"){
             desel();
         }else if(!e.ctrlKey&&k.length===1&&SEQU.includes(k)){
