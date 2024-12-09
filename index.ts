@@ -27,7 +27,7 @@ function selpiece(i: number){
         select = i;
         pmc.textContent = sequ(i);
     }else{
-        if(i!==(experiment.length-1)&&experiment.get(i)===Piece.EMPTY&&experiment.get(i+1)===Piece.EMPTY){
+        if(i!==(experiment.length-1)&&(experiment.get(i)===Piece.EMPTY||i===select+1)&&(experiment.get(i+1)===Piece.EMPTY||i+1===select)){
             experiment.move(select,i);
         }
         desel();
