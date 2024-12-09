@@ -163,7 +163,6 @@ class Board {
     }
 }
 ;
-let experiment = new Board(20);
 function new_slot(cue = null) {
     let sl = document.createElement("div");
     sl.classList.add("slot");
@@ -190,21 +189,65 @@ async function mvlist(mvs, animate) {
         experiment.move(m.src, m.dst);
     }
 }
+let experiment = new Board(4 + 2 * (4));
+const SOLVE = [
+    null, //0
+    null, //1
+    null, //2
+    [
+        { src: 5, dst: 2 },
+        { src: 8, dst: 5 },
+        { src: 6, dst: 0 }
+    ],
+    [
+        { src: 5, dst: 2 },
+        { src: 3, dst: 5 },
+        { src: 7, dst: 3 },
+        { src: 10, dst: 7 },
+        { src: 8, dst: 0 }
+    ],
+    [
+        { src: 7, dst: 2 },
+        { src: 4, dst: 7 },
+        { src: 11, dst: 4 },
+        { src: 3, dst: 11 },
+        { src: 8, dst: 0 },
+        { src: 12, dst: 3 },
+        { src: 10, dst: 8 }
+    ],
+    // [//5, Complexity = 8
+    //     {src: 5, dst: 2},
+    //     {src: 11, dst: 0},
+    //     {src: 8, dst: 11},
+    //     {src: 1, dst: 5},
+    //     {src: 6, dst: 1},
+    //     {src: 3, dst: 6},
+    //     {src: 10, dst: 8},
+    //     {src: 12, dst: 3}
+    // ],
+    // [//5, Complexity = 8
+    //     {src: 11, dst: 2},
+    //     {src: 8, dst: 11},
+    //     {src: 12, dst: 0},
+    //     {src: 3, dst: 8},
+    //     {src: 6, dst: 3},
+    //     {src: 2, dst: 6},
+    //     {src: 5, dst: 2},
+    //     {src: 10, dst: 5}
+    // ]
+];
 function alsolve() {
     let marbles = experiment.length - 4;
     if (marbles & 1) {
         alert("Marbles not paired!");
     }
-    marbles >>= 1;
-    if (marbles < 3) {
+    let pairs = marbles >> 1;
+    if (pairs < 3) {
         alert("Must have at least 3 pairs!");
     }
-    let mlist = [
-        { src: 5, dst: 2 },
-        { src: 8, dst: 5 },
-        { src: 6, dst: 0 }
-    ];
-    for (let i = 3; i < marbles; ++i) {
+    let base = Math.min(SOLVE.length - 1, pairs);
+    let mlist = SOLVE[base];
+    for (let i = base; i < pairs; ++i) {
         mlist.push({ src: i - 1, dst: i * 2 + 2 });
         mlist.push({ src: i * 2 + 3, dst: i * 2 });
         mlist.push({ src: 0, dst: i * 2 + 3 });
