@@ -28,7 +28,7 @@ function selpiece(i) {
         pmc.textContent = sequ(i);
     }
     else {
-        if (i !== (experiment.length - 1) && experiment.get(i) === Piece.EMPTY && experiment.get(i + 1) === Piece.EMPTY) {
+        if (i !== (experiment.length - 1) && (experiment.get(i) === Piece.EMPTY || i === select + 1) && (experiment.get(i + 1) === Piece.EMPTY || i + 1 === select)) {
             experiment.move(select, i);
         }
         desel();
@@ -189,7 +189,7 @@ async function mvlist(mvs, animate) {
         experiment.move(m.src, m.dst);
     }
 }
-let experiment = new Board(4 + 2 * (4));
+let experiment = new Board(4 + 2 * (5));
 const SOLVE = [
     null, //0
     null, //1
@@ -236,25 +236,53 @@ const SOLVE = [
     //     {src: 10, dst: 5}
     // ]
 ];
-function alsolve() {
+function getpairs() {
     let marbles = experiment.length - 4;
     if (marbles & 1) {
         alert("Marbles not paired!");
+        return null;
     }
     let pairs = marbles >> 1;
     if (pairs < 3) {
         alert("Must have at least 3 pairs!");
+        return null;
     }
-    let base = Math.min(SOLVE.length - 1, pairs);
-    let mlist = SOLVE[base];
-    for (let i = base; i < pairs; ++i) {
-        mlist.push({ src: i - 1, dst: i * 2 + 2 });
-        mlist.push({ src: i * 2 + 3, dst: i * 2 });
-        mlist.push({ src: 0, dst: i * 2 + 3 });
-        mlist.push({ src: i * 2 + 2, dst: 0 });
-        mlist.push({ src: i * 2 + 4, dst: i - 1 });
+    return pairs;
+}
+function alsolve() {
+    let pairs;
+    if ((pairs = getpairs()) !== null) {
+        let base = Math.min(SOLVE.length - 1, pairs);
+        let mlist = SOLVE[base];
+        for (let i = base; i < pairs; ++i) {
+            mlist.push({ src: i - 1, dst: i * 2 + 2 });
+            mlist.push({ src: i * 2 + 3, dst: i * 2 });
+            mlist.push({ src: 0, dst: i * 2 + 3 });
+            mlist.push({ src: i * 2 + 2, dst: 0 });
+            mlist.push({ src: i * 2 + 4, dst: i - 1 });
+        }
+        return mlist;
     }
-    return mlist;
+    return [];
+}
+function gpsolve() {
+    let pairs;
+    if ((pairs = getpairs()) !== null) {
+        let mlist = [];
+        let front = 5;
+        let back = 2;
+        for (let i = 0; i < pairs - 2; ++i) {
+            mlist.push({ src: front, dst: back });
+            if (i < pairs - 3)
+                mlist.push({ src: back + 1, dst: front });
+            front += 2;
+            back += 1;
+        }
+        mlist.push({ src: front + 1, dst: front - 2 });
+        mlist.push({ src: front - 1, dst: 0 });
+        return mlist;
+    }
+    return [];
 }
 addEventListener("load", () => {
     box = document.getElementById("row");
@@ -284,6 +312,10 @@ addEventListener("load", () => {
         else if (k === "s") {
             experiment.restart();
             await mvlist(alsolve(), 100);
+        }
+        else if (k === "g") {
+            experiment.restart();
+            await mvlist(gpsolve(), 100);
         }
         else if (k === "Backspace") {
             desel();

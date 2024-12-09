@@ -183,7 +183,7 @@ async function mvlist(mvs: Move[],animate: number){
         experiment.move(m.src,m.dst);
     }
 }
-let experiment: Board = new Board(4+2*(4));
+let experiment: Board = new Board(4+2*(5));
 const SOLVE: Move[][] = [
     null,//0
     null,//1
@@ -230,25 +230,52 @@ const SOLVE: Move[][] = [
     //     {src: 10, dst: 5}
     // ]
 ];
-function alsolve(){//Complexity = 5x - 12
+function getpairs(){
     let marbles = experiment.length-4;
     if(marbles&1){
         alert("Marbles not paired!");
+        return null;
     }
     let pairs = marbles >> 1;
     if(pairs<3){
         alert("Must have at least 3 pairs!");
+        return null;
     }
-    let base = Math.min(SOLVE.length-1,pairs);
-    let mlist: Move[] = SOLVE[base];
-    for(let i=base;i<pairs;++i){
-        mlist.push({src: i-1, dst: i*2+2});
-        mlist.push({src: i*2+3, dst: i*2});
-        mlist.push({src: 0, dst: i*2+3});
-        mlist.push({src: i*2+2, dst: 0});
-        mlist.push({src: i*2+4, dst: i-1});
+    return pairs;
+}
+function alsolve(){//Complexity = 3|x=3, 5|x=4, 5x-18|x>4
+    let pairs: number;
+    if((pairs = getpairs())!==null){
+        let base = Math.min(SOLVE.length-1,pairs);
+        let mlist: Move[] = SOLVE[base];
+        for(let i=base;i<pairs;++i){
+            mlist.push({src: i-1, dst: i*2+2});
+            mlist.push({src: i*2+3, dst: i*2});
+            mlist.push({src: 0, dst: i*2+3});
+            mlist.push({src: i*2+2, dst: 0});
+            mlist.push({src: i*2+4, dst: i-1});
+        }
+        return mlist;
     }
-    return mlist;
+    return [];
+}
+function gpsolve(){//Complexity = 2x-3
+    let pairs: number;
+    if((pairs = getpairs())!==null){
+        let mlist: Move[] = [];
+        let front = 5;
+        let back = 2;
+        for(let i=0;i<pairs-2;++i){
+            mlist.push({src: front, dst: back});
+            if(i<pairs-3)mlist.push({src: back+1, dst: front});
+            front += 2;
+            back += 1;
+        }
+        mlist.push({src: front+1, dst: front-2});
+        mlist.push({src: front-1, dst: 0});
+        return mlist;
+    }
+    return [];
 }
 addEventListener("load",() => {
     box = document.getElementById("row") as HTMLDivElement;
@@ -275,6 +302,9 @@ addEventListener("load",() => {
         }else if(k==="s"){
             experiment.restart();
             await mvlist(alsolve(),100);
+        }else if(k==="g"){
+            experiment.restart();
+            await mvlist(gpsolve(),100);
         }else if(k==="Backspace"){
             desel();
         }else if(!e.ctrlKey&&k.length===1&&SEQU.includes(k)){
