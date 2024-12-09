@@ -5,8 +5,11 @@ html{
     width: 105px;
     height: 105%;
 }
-.slot:not(:last-child):hover>.highlight{
-    border-bottom: 4px solid lightgreen;
+.slot:not(:last-child):hover{
+    outline: 4px solid lightgreen;
+}
+.slot:hover+{
+    outline: 4px solid lightgreen;
 }
 .slot{
     width: 50px;

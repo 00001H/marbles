@@ -167,9 +167,6 @@ function new_slot(cue: string|null=null) : HTMLDivElement{
         sl.append(cuetext);
     }
     sl.setAttribute("state","empty");
-    let hl = document.createElement("div");
-    hl.classList.add("highlight");
-    sl.append(hl);
     return sl;
 }
 function sleep(ms: number){
