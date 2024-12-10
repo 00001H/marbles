@@ -8,7 +8,7 @@ html{
 .slot:not(:last-child):hover{
     outline: 4px solid lightgreen;
 }
-.slot:hover+{
+.slot:hover+.slot{
     outline: 4px solid lightgreen;
 }
 .slot{
